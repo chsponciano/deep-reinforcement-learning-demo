@@ -1,5 +1,8 @@
-# Importação das bibliotecas
-
+'''
+Authors: Carlos Henrique Ponciano da Silva & Vinicius Luis da Silva
+Implementation of the Reinforcement Learning course with Deep Learning, PyTorch and Python offered by Jones Granatyr
+https://www.udemy.com/course/aprendizagem-reforco-deep-learning-pytorch-python/
+'''
 import numpy as np
 import random
 import os
@@ -10,7 +13,8 @@ import torch.optim as optim
 import torch.autograd as autograd
 from torch.autograd import Variable
 
-# Criação da arquitetura da rede neural
+
+# creation of the structure of the neural network using torch
 class Network(nn.Module):
     def __init__(self, input_size, nb_action):
         super(Network, self).__init__()
@@ -23,29 +27,26 @@ class Network(nn.Module):
         
     def forward(self, state):
         x = F.relu(self.fc1(state))
-        q_values = self.fc2(x)
-        return q_values
+        return self.fc2(x)
     
-# Implementação do replay de experiência
-class ReplayMemory(object):
+# experience replay implementation
+class ReplayMemory:
     def __init__(self, capacity):
         self.capacity = capacity
         self.memory = []
         
-    # D,E,F,G,H
-    # 4 valores: último estado, novo estado, última ação, última recompensa
+    # 4 values: last state, new state, last action, last reward
     def push(self, event):
         self.memory.append(event)
         if len(self.memory) > self.capacity:
             del self.memory[0]
             
     def sample(self, batch_size):
-        # ((1,2,3), (4,5,6)) -> ((1,4), (2,5), (3,6))
         samples = zip(*random.sample(self.memory, batch_size))
         return map(lambda x: Variable(torch.cat(x, 0)), samples)
         
-# Implementação de Deep Q-Learning
-class Dqn():
+# Implementation of Deep Q-Learning
+class Dqn:
     def __init__(self, input_size, nb_action, gamma):
         self.gamma = gamma
         self.reward_window = []
@@ -57,8 +58,7 @@ class Dqn():
         self.last_reward = 0
         
     def select_action(self, state):
-        # sofmax(1,2,3) -> (0.04, 0.11, 0.85) -> (0, 0.02, 0.98)
-        probs = F.softmax(self.model(Variable(state, volatile = True)) * 100) # T = 7
+        probs = F.softmax(self.model(Variable(state, volatile = True)) * 100)
         action = probs.multinomial(num_samples=1)
         return action.data[0,0]
     
@@ -73,18 +73,21 @@ class Dqn():
         
     def update(self, reward, new_signal):
         new_state = torch.Tensor(new_signal).float().unsqueeze(0)
-        self.memory.push((self.last_state, new_state, torch.LongTensor([int(self.last_action)]),
-                     torch.Tensor([self.last_reward])))
+        self.memory.push((self.last_state, new_state, torch.LongTensor([int(self.last_action)]), torch.Tensor([self.last_reward])))
         action = self.select_action(new_state)
+
         if len(self.memory.memory) > 100:
             batch_state, batch_next_state, batch_action, batch_reward = self.memory.sample(100)
             self.learn(batch_state, batch_next_state, batch_reward, batch_action)
+        
         self.last_action = action
         self.last_state = new_state
         self.last_reward = reward
         self.reward_window.append(reward)
+        
         if len(self.reward_window) > 1000:
             del self.reward_window[0]
+        
         return action
     
     def score(self):
@@ -99,60 +102,6 @@ class Dqn():
             checkpoint = torch.load('last_brain.pth')
             self.model.load_state_dict(checkpoint['state_dict'])
             self.optimizer.load_state_dict(checkpoint['optimizer'])
-            print('Carregado com sucesso')
+            print('Successfully uploaded')
         else:
-            print('Erro ao carregar')
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-            
-        
-        
-    
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+            print('Error loading')

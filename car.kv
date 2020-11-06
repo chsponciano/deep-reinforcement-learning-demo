@@ -13,7 +13,7 @@
             size: self.size
         PopMatrix
 
-<Ball1>:
+<Sensor1>:
     size: 10,10
     canvas:
         Color:
@@ -21,7 +21,7 @@
         Ellipse:
             pos: self.pos
             size: self.size
-<Ball2>:
+<Sensor2>:
     size: 10,10
     canvas:
         Color:
@@ -30,7 +30,7 @@
             pos: self.pos
             size: self.size
 
-<Ball3>:
+<Sensor3>:
     size: 10,10
     canvas:
         Color:
@@ -41,19 +41,19 @@
 
 <Game>:
     car: game_car
-    ball1: game_ball1
-    ball2: game_ball2
-    ball3: game_ball3
+    sensor1: game_sensor1
+    sensor2: game_sensor2
+    sensor3: game_sensor3
 
     Car:
         id: game_car
         center: self.parent.center
-    Ball1:
-        id: game_ball1
+    Sensor1:
+        id: game_sensor1
         center: self.parent.center
-    Ball2:
-        id: game_ball2
+    Sensor2:
+        id: game_sensor2
         center: self.parent.center
-    Ball3:
-        id: game_ball3
+    Sensor3:
+        id: game_sensor3
         center: self.parent.center
